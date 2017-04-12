@@ -66,8 +66,33 @@ group by class.cname) as t1
 on t1.cname=class.cname
 where class.room='R128' or t1.num>=5;
 
+select room from class left join enrolled on class.cname=enrolled.cname group by room having count(enrolled.cname)>=5 or room='R128'
+
 --Part 4
 select enrolled.cname,class.meets_at
 from enrolled join class on enrolled.cname=class.cname group by enrolled.cname,class.meets_at order by class.meets_at DESC;
 
+—Part 5
+select * from faculty,(select * from (select fid,count(room) from class group by fid) as t1 where t1.count=(select count(*) from (select room from class group by room) as t1)) as t2 where faculty.fid=t2.fid;
+
+—Part 6
+select fname,count(fname) from (select fname,faculty.fid,class.cname from faculty join class on faculty.fid=class.fid) as t1 join enrolled on t1.cname=enrolled.cname group by fname having count(fname)<5;
+
+—Part 7
+select standing,avg(age) from student group by standing;
+
+—Part 8
+select standing,avg(age) from student where standing!='JR' group by standing;
+
+—Part 9
+
+
+—Part 10
+select sname from student,(select snum,count(snum) from enrolled group by snum having count(snum)=3) as t1 where student.snum=t1.snum;
+
+—Part 11
+select sname from student where snum not in (select snum from enrolled);
+
+—Part 12
+select age,standing,count(standing) from student group by age,standing;
 
