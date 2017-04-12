@@ -1,30 +1,30 @@
 --Part 1
 --Get where one lecturer
-select cname 
-from class left join faculty on class.fid=faculty.fid 
-group by cname 
+select cname
+from class left join faculty on class.fid=faculty.fid
+group by cname
 having count(class.fid)<=1;
 
 --find snum enrolled in class
-select snum 
-from enrolled 
+select snum
+from enrolled
 join
-(select cname 
-from class left join faculty on class.fid=faculty.fid 
-group by cname 
+(select cname
+from class left join faculty on class.fid=faculty.fid
+group by cname
 having count(class.fid)<=1) as t1 on t1.cname=enrolled.cname;
 
 --get student name
 select sname
 from student
 join
-(select snum 
-from enrolled 
+(select snum
+from enrolled
 join
-(select cname 
-from class left join faculty on class.fid=faculty.fid 
-group by cname 
-having count(class.fid)<=1) as t1 on t1.cname=enrolled.cname) as t2 on t2.snum=student.snum 
+(select cname
+from class left join faculty on class.fid=faculty.fid
+group by cname
+having count(class.fid)<=1) as t1 on t1.cname=enrolled.cname) as t2 on t2.snum=student.snum
 where standing='JR'
 group by sname;
 
@@ -32,12 +32,12 @@ group by sname;
 select student.*
 from student
 left join
-(select snum 
-from enrolled 
+(select snum
+from enrolled
 join
-(select cname 
-from class join faculty on class.fid=faculty.fid 
-group by cname 
+(select cname
+from class join faculty on class.fid=faculty.fid
+group by cname
 having count(class.fid)<=1) as t1 on t1.cname=enrolled.cname) as t2 on t2.snum=student.snum
 where t2.snum is not null or major='History'
 group by student.snum
@@ -110,5 +110,15 @@ select suppliers.sid from suppliers,catalog, (select pname,parts.pid,avg(cost),c
 select suppliers.sname,pname,t1.color from suppliers,catalog, (select pname,parts.pid,max(cost),color from suppliers,catalog,parts where suppliers.sid=catalog.sid and catalog.pid=parts.pid group by parts.pid,pname,color) as t1 where t1.pid=catalog.pid and catalog.cost=t1.max and suppliers.sid=catalog.sid order by pname;
 
 --Part 7
+select sname,pname from suppliers,catalog,parts where suppliers.sid=catalog.sid and catalog.pid=parts.pid and parts.color='Red' and suppliers.sid not in (select suppliers.sid from suppliers,catalog,parts where suppliers.sid=catalog.sid and catalog.pid=parts.pid and parts.color!='Red');
 
+--Part 8
+select t1.sid from (select * from catalog join parts on catalog.pid=parts.pid where color='Red') t1,(select * from catalog join parts on catalog.pid=parts.pid where color='Green')t2 where t1.sid=t2.sid;
 
+--Part 9
+select sid from catalog join parts on catalog.pid=parts.pid where color='Red' or color='Green' group by sid;
+
+--Part 10
+select suppliers.sname,count(pname) from suppliers,catalog,parts where suppliers.sid=catalog.sid and catalog.pid=parts.pid and suppliers.sid in (select suppliers.sid from suppliers,catalog,parts where color='Green' and suppliers.sid=catalog.sid and catalog.pid=parts.pid) group by sname;
+
+--Part 11
