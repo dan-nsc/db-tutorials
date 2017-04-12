@@ -96,3 +96,19 @@ select sname from student where snum not in (select snum from enrolled);
 —Part 12
 select age,standing,count(standing) from student group by age,standing;
 
+Ex 5.2:
+--Part 1
+select pname from catalog join parts on catalog.pid=parts.pid group by pname;
+
+--Part 4
+select pname,color from suppliers,catalog,parts,(select * from suppliers,catalog where suppliers.sid=catalog.sid and suppliers.sname!='Acme Widget Suppliers') as t1 where suppliers.sname='Acme Widget Suppliers' and suppliers.sid=catalog.sid and catalog.pid=parts.pid and catalog.pid!=t1.pid group by pname,color;
+
+--Part 5
+select suppliers.sid from suppliers,catalog, (select pname,parts.pid,avg(cost),color from suppliers,catalog,parts where suppliers.sid=catalog.sid and catalog.pid=parts.pid group by parts.pid,pname,color) as t1 where t1.pid=catalog.pid and catalog.cost>t1.avg and suppliers.sid=catalog.sid;
+
+--Part 6
+select suppliers.sname,pname,t1.color from suppliers,catalog, (select pname,parts.pid,max(cost),color from suppliers,catalog,parts where suppliers.sid=catalog.sid and catalog.pid=parts.pid group by parts.pid,pname,color) as t1 where t1.pid=catalog.pid and catalog.cost=t1.max and suppliers.sid=catalog.sid order by pname;
+
+--Part 7
+
+
