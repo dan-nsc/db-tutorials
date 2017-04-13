@@ -50,11 +50,11 @@ where class.room='R128' or class.cname
 in (select enrolled.cname from enrolled group by enrolled.cname having count(enrolled.cname)>=5);
 
 --Part 4
-select * from (select enrolled.cname,class.meets_at
+select * from (select snum,enrolled.cname,class.meets_at
 from enrolled join class on enrolled.cname=class.cname 
-group by enrolled.cname,class.meets_at)t1,(select enrolled.cname,class.meets_at
+group by enrolled.cname,class.meets_at,snum)t1,(select snum,enrolled.cname,class.meets_at
 from enrolled join class on enrolled.cname=class.cname 
-group by enrolled.cname,class.meets_at)t2 where t1.cname!=t2.cname;
+group by enrolled.cname,class.meets_at,snum)t2 where t1.cname!=t2.cname and  t1.snum=t2.snum and t1.meets_at=t2.meets_at;
 
 —Part 5
 select * from faculty,(select * from (select fid,count(room) from class group by fid) as t1 where t1.count=(select count(*) from (select room from class group by room) as t1)) as t2 where faculty.fid=t2.fid;
