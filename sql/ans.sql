@@ -57,7 +57,11 @@ from enrolled join class on enrolled.cname=class.cname
 group by enrolled.cname,class.meets_at,snum)t2 where t1.cname!=t2.cname and  t1.snum=t2.snum and t1.meets_at=t2.meets_at;
 
 —Part 5
-select * from faculty,(select * from (select fid,count(room) from class group by fid) as t1 where t1.count=(select count(*) from (select room from class group by room) as t1)) as t2 where faculty.fid=t2.fid;
+select * from faculty,
+	(select * from (select fid,count(room) from class group by fid) as t1 
+		where t1.count=(select count(*) from (select room from class group by room) as t1)
+	) as t2 
+where faculty.fid=t2.fid;
 
 —Part 6
 select fname,count(fname) from (select fname,faculty.fid,class.cname from faculty join class on faculty.fid=class.fid) as t1 join enrolled on t1.cname=enrolled.cname group by fname having count(fname)<5;
@@ -78,7 +82,23 @@ select sname from student,(select snum,count(snum) from enrolled group by snum h
 select sname from student where snum not in (select snum from enrolled);
 
 —Part 12
-select age,standing,count(standing) from student group by age,standing;
+select t1.age,standing 
+from (
+	select age,standing,count(standing) 
+	from student 
+	group by age,standing
+     )t1,
+     (
+	select age,max(count) 
+	from (
+		select age,standing,count(standing) 
+		from student 
+		group by age,standing
+	)t1 
+     	group by t1.age
+     )t2 
+where t1.age=t2.age and t1.count=t2.max 
+order by t1.age;
 
 Ex 5.2:
 --Part 1
