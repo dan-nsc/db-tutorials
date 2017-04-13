@@ -44,33 +44,17 @@ group by student.snum
 ORDER BY age DESC LIMIT 1;
 
 --Part 3
-select *
-from class
-left join enrolled on class.cname=enrolled.cname
-ORDER BY class.cname DESC;
-
-/* old version
-select class.* from class,(select class.cname,room
-from class
-left join enrolled on class.cname=enrolled.cname
-group by class.cname,room
-having count(class.cname)>=5) as t1
-where t1.cname=class.cname or class.room='R128'
-group by class.cname;
-*/
-select class.*,t1.num from class
-join (select class.cname,count(snum) as num
-from class
-left join enrolled on class.cname=enrolled.cname
-group by class.cname) as t1
-on t1.cname=class.cname
-where class.room='R128' or t1.num>=5;
-
-select room from class left join enrolled on class.cname=enrolled.cname group by room having count(enrolled.cname)>=5 or room='R128'
+select distinct class.cname from class 
+join enrolled on class.cname=enrolled.cname 
+where class.room='R128' or class.cname 
+in (select enrolled.cname from enrolled group by enrolled.cname having count(enrolled.cname)>=5);
 
 --Part 4
-select enrolled.cname,class.meets_at
-from enrolled join class on enrolled.cname=class.cname group by enrolled.cname,class.meets_at order by class.meets_at DESC;
+select * from (select enrolled.cname,class.meets_at
+from enrolled join class on enrolled.cname=class.cname 
+group by enrolled.cname,class.meets_at)t1,(select enrolled.cname,class.meets_at
+from enrolled join class on enrolled.cname=class.cname 
+group by enrolled.cname,class.meets_at)t2 where t1.cname!=t2.cname;
 
 —Part 5
 select * from faculty,(select * from (select fid,count(room) from class group by fid) as t1 where t1.count=(select count(*) from (select room from class group by room) as t1)) as t2 where faculty.fid=t2.fid;
